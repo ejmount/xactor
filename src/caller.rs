@@ -102,15 +102,19 @@ pub trait CallerFn<T>: DynClone + 'static + Send + Sync
 where
     T: Message,
 {
-    fn call(&self, msg: T) -> Pin<Box<dyn Future<Output = Result<T::Result>>>>;
+    fn call(&self, msg: T) -> Pin<Box<dyn Future<Output = Result<T::Result>> + Send>>;
 }
 
 impl<F, T> CallerFn<T> for F
 where
-    F: Fn(T) -> Pin<Box<dyn Future<Output = Result<T::Result>>>> + 'static + Send + Sync + Clone,
+    F: Fn(T) -> Pin<Box<dyn Future<Output = Result<T::Result>> + Send>>
+        + 'static
+        + Send
+        + Sync
+        + Clone,
     T: Message,
 {
-    fn call(&self, msg: T) -> Pin<Box<dyn Future<Output = Result<T::Result>>>> {
+    fn call(&self, msg: T) -> Pin<Box<dyn Future<Output = Result<T::Result>> + Send>> {
         self(msg)
     }
 }

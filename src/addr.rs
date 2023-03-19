@@ -134,7 +134,7 @@ impl<A: Actor> Addr<A> {
                     }
                     None => Err(crate::error::anyhow!("Actor Dropped")),
                 }
-            }) as Pin<Box<dyn Future<Output = Result<T::Result>>>>
+            }) as Pin<Box<dyn Future<Output = Result<T::Result>>+Send>>
         };
 
         Caller {
